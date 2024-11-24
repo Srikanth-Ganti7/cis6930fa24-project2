@@ -13,30 +13,87 @@ This project implements the Unredactor, a tool designed to predict redacted name
 
 ## Pipeline Overview
 
-### Preprocessing:
-- Load the dataset (unredactor.tsv) and split it into training and validation sets.
+The pipeline implemented for the Unredactor project is designed to be modular, scalable, and efficient, focusing on extracting meaningful features from textual data to predict redacted names accurately. The chosen approach addresses the challenges of working with unstructured text and combines feature engineering with machine learning for robust results. Below is an explanation of the pipeline’s components and the reasoning behind them:
 
-- Extract features like redacted word length, previous/next words, sentiment polarity, and word count from the context.
+### Preprocessing:
+The pipeline starts by reading the input data and splitting it into training and validation datasets. During this step, key features like the redacted block length and the words immediately before and after the redaction are extracted. This ensures the data is prepared in a structured format for the machine learning model.
+
+#### This Step is Necessary:
+
+- Extracting features such as redacted block length and surrounding words provides the model with essential clues about the redaction context.
+- A well-defined split between training and validation sets ensures reliable evaluation and avoids data leakage.
 
 ### Feature Engineering:
 
-- Use TfidfVectorizer to transform the textual context into numerical features.
+Key features are engineered to capture the contextual meaning of the text:
 
-- Combine TF-IDF features with additional manually engineered features.
+- TF-IDF (Term Frequency-Inverse Document Frequency) represents the importance of words in the text.
+- Additional features such as the length of the redacted block, number of words in the context, and sentiment polarity are included.
+
+#### Why These Features Were Chosen:
+
+- TF-IDF: It highlights the significance of words in the context while ignoring common, less meaningful words (e.g., articles, prepositions).
+- Sentiment Polarity: Sentiment, calculated using TextBlob, provides insights into the emotional tone of the context, which can relate to specific names.
+- Redacted Length: The length of the redacted block serves as a direct indicator of the missing name’s character count.
+
+### Vectorization
+The pipeline uses a hybrid approach by combining TF-IDF features with the additional engineered features. This comprehensive feature set is fed into the model to train and make predictions.
+
+#### Reason for This Approach:
+
+- TF-IDF captures the textual patterns, while additional features provide structural and contextual information. Together, they create a richer representation of the data.
+- Combining these features ensures that the model learns from both statistical patterns in the text and manually crafted indicators.
 
 ### Model Training:
-- Train a RandomForestClassifier on the training dataset.
+A RandomForestClassifier is used to train the model. Random Forest is a robust ensemble-based algorithm that can handle various types of features and prevents overfitting.
+
+#### Why Random Forest Was Chosen:
+
+- It effectively handles the diverse feature set comprising of categorical data.
+- Its ensemble nature reduces overfitting, making it suitable for tasks involving high-dimensional data, such as TF-IDF vectors.
+
 ### Testing and Predictions:
-- Use the trained model to predict redacted names from test data (test.tsv) and generate a submission.tsv file.
+The predict_on_test() function applies the trained model to the test dataset to generate predictions. The results are saved in the required submission.tsv format, ensuring compatibility with the evaluation system.
+
+#### Purpose of This Step:
+
+- This function maintains consistency in feature engineering and vectorization between training and testing phases.
+- It ensures the output adheres to the specified format, enabling smooth submission and evaluation.
+
 ### Evaluation:
-- Evaluate the model on the validation set using metrics like accuracy, precision, recall, and F1-score.
+The pipeline evaluates model performance using metrics such as accuracy, precision, recall, and F1-score. These metrics are computed on the validation set to assess how well the model generalizes.
+
+#### Why These Metrics Were Selected:
+
+- Precision and recall are critical for identifying names accurately, as incorrect predictions could lead to significant errors in sensitive contexts.
+- F1-score provides a balanced assessment of the model’s precision and recall, offering a comprehensive view of its effectiveness.
+
+### Modular Design
+The pipeline is organized into individual functions for preprocessing, feature extraction, vectorization, training, prediction, and evaluation. Each function performs a specific task, making the codebase easy to debug, test, and extend.
+
+#### Benefits of Modularity:
+
+Each component can be independently verified, reducing the risk of cascading errors.
+The design allows flexibility to incorporate future improvements, such as adding new features or testing alternative machine learning models.
+
+### Scalability
+The use of TF-IDF and Random Forest makes the pipeline scalable for large datasets, such as the IMDB reviews corpus. The additional features are lightweight to compute, ensuring computational efficiency.
+
+#### Why Scalability Matters:
+
+The IMDB dataset contains thousands of entries, requiring a pipeline that can handle significant data volumes without compromising performance.
+The balance between computational efficiency and predictive accuracy ensures the pipeline remains practical for larger datasets.
+
+---
+
+This pipeline is carefully crafted to integrate statistical feature extraction with machine learning, providing a robust and reliable approach to predicting redacted names. Each component has been thoughtfully chosen to enhance the pipeline’s ability to generalize and deliver accurate results across a variety of contexts.
 
 ## How to install
 
 To set up the environment, use pipenv to install the dependencies.
 
 ```bash
-pipenv install .
+pipenv install 
 ```
 
 ## How to run
