@@ -44,7 +44,7 @@ Run the program using the following commands:
 
 ### Run the pipeline:
 ```bash
-pipenv run python unredactor.py --data data/unredactor.tsv --test test.tsv --output submission.tsv
+pipenv run python unredactor2.py --data data/unredactor.tsv --test test.tsv --output submission.tsv
 ```
 
 Check the results in submission.tsv.
